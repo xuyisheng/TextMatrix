@@ -50,6 +50,7 @@ class TextMatrix @JvmOverloads constructor(
     private val textPaint by lazy {
         Paint().apply {
             color = Color.BLACK
+            isAntiAlias = true
             textSize = fontSize
         }
     }
@@ -77,7 +78,7 @@ class TextMatrix @JvmOverloads constructor(
 
     private val guidelinePaint by lazy {
         Paint().apply {
-            color = Color.RED
+            color = Color.MAGENTA
             strokeWidth = 2F
             style = Paint.Style.FILL
         }
@@ -104,12 +105,12 @@ class TextMatrix @JvmOverloads constructor(
         canvas?.drawColor(Color.CYAN)
         // 绘制坐标格
         drawGrids(canvas)
-        // 绘制Baseline
-        canvas?.drawLine(baseLineX, baseLineY, viewWidth.toFloat(), baseLineY, guidelinePaint)
         // 根据Baseline绘制LineRect
         drawLineRect(canvas)
         // 根据Baseline绘制TextRect
         drawTextRect(canvas)
+        // 绘制Baseline
+        canvas?.drawLine(baseLineX, baseLineY, viewWidth.toFloat(), baseLineY, guidelinePaint)
         // 绘制四格线
         draw4Lines(canvas)
         // 绘制每个字符的Width
@@ -130,7 +131,7 @@ class TextMatrix @JvmOverloads constructor(
     }
 
     private fun drawTextRect(canvas: Canvas?) {
-        // getTextBounds的参照为baseline = 0得到的坐标，需要根据实际baseline位置进行修正
+        // getTextBounds的参照为baseline为(0, 0)得到的坐标，需要根据实际baseline位置进行修正
         textPaint.getTextBounds(drawText, 0, drawText.length, textRect)
         textRect.top = (baseLineY + textRect.top).toInt()
         textRect.bottom = (baseLineY + textRect.bottom).toInt()
@@ -183,11 +184,11 @@ class TextMatrix @JvmOverloads constructor(
     }
 
     private fun drawGrids(canvas: Canvas?) {
-        repeat(viewWidth / gridSize - 1) {
+        repeat(viewWidth / gridSize) {
             val x = ((it + 1) * gridSize).toFloat()
             canvas?.drawLine(x, baseLineX, x, viewHeight.toFloat(), coordinatePaint)
         }
-        repeat(viewHeight / gridSize - 1) {
+        repeat(viewHeight / gridSize) {
             val y = ((it + 1) * gridSize).toFloat()
             canvas?.drawLine(baseLineX, y, viewWidth.toFloat(), y, coordinatePaint)
         }
